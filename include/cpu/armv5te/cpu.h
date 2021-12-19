@@ -1,8 +1,23 @@
 #ifndef JULIEDS_CPU_H
 #define JULIEDS_CPU_H
 
-typedef unsigned int register_t;
+#include <stdint.h>
 
+typedef unsigned int arm_register_t;
+
+/**
+ * The 16 registers of the CPUs in the Nintendo DS system.
+ * The registers are split into banked and unbanked registers.
+ *
+ * Unbanked registers R0-R7:
+ *  An unbanked register is independent of the current \ref cpu_mode. It always refers to
+ *  the same 32 bit space regardless and can be used whenever a general purpose register
+ *  is needed.
+ *
+ * Banked registers R8-R14:
+ *  The banked registers point to a 32 bit space depending on the current \ref cpu_mode.
+ *  TODO: Support banked registers by not using a simple single dimensional array.
+ */
 typedef enum register_type {
     REG_R0, REG_R1, REG_R2, REG_R3, REG_R4, REG_R5, REG_R6, REG_R7,
     REG_R8, REG_R9, REG_R10, REG_R11, REG_R12, REG_R13, REG_R14,
@@ -19,27 +34,32 @@ typedef enum cpu_mode {
 } cpu_mode_t;
 
 typedef struct cpsr {
-    cpu_mode_t mode                 : 5;
-    unsigned int T                  : 1;
-    unsigned int disable_fiq        : 1;
-    unsigned int disable_irq        : 1;
-    unsigned int A                  : 1;
-    unsigned int endianness         : 1;
-    unsigned int /* reserved */     : 6;
-    unsigned int bla                : 4;
-    unsigned int /* reserved */     : 4;
-    unsigned int J                  : 1;
-    unsigned int /* reserved */     : 2;
-    unsigned int overflow           : 1;
-    unsigned int signed_overflow    : 1;
-    unsigned int carry              : 1;
-    unsigned int zero               : 1;
-    unsigned int negative           : 1;
+    cpu_mode_t mode             : 5;
+    uint32_t T                  : 1;
+    uint32_t disable_fiq        : 1;
+    uint32_t disable_irq        : 1;
+    uint32_t A                  : 1;
+    uint32_t endianness         : 1;
+    uint32_t /* reserved */     : 6;
+    uint32_t bla                : 4;
+    uint32_t /* reserved */     : 4;
+    uint32_t J                  : 1;
+    uint32_t /* reserved */     : 2;
+    uint32_t overflow           : 1;
+    uint32_t signed_overflow    : 1;
+    uint32_t carry              : 1;
+    uint32_t zero               : 1;
+    uint32_t negative           : 1;
 } cpsr_t;
 
 typedef struct armv5te {
-    register_t registers[16];
+    arm_register_t unbanked[8];
+    arm_register_t banked[8][6];
     cpsr_t cpsr;
 } armv5te_t;
+
+uint32_t armv5te_get_register(register_type_t reg);
+
+void armv5te_set_register(register_type_t reg, uint32_t value);
 
 #endif //JULIEDS_CPU_H

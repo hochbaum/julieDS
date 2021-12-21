@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 
-char *nds_cartridge_read(const char *path)
+unsigned char *nds_cartridge_read(const char *path)
 {
     FILE *fp;
     if ((fp = fopen(path, "rb+")) == NULL) return NULL;
@@ -12,8 +12,7 @@ char *nds_cartridge_read(const char *path)
     struct stat st;
     if (stat(path, &st) == -1) return NULL;
 
-    char *buf = malloc(st.st_size);
+    unsigned char *buf = malloc(st.st_size);
     fread(buf, st.st_size, 1, fp);
-
     return buf;
 }

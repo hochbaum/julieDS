@@ -18,23 +18,25 @@ typedef unsigned int arm_register_t;
  *  The banked registers point to a 32 bit space depending on the current \ref cpu_mode.
  *  TODO: Support banked registers by not using a simple single dimensional array.
  */
-typedef enum register_type {
+enum register_type {
     REG_R0, REG_R1, REG_R2, REG_R3, REG_R4, REG_R5, REG_R6, REG_R7,
     REG_R8, REG_R9, REG_R10, REG_R11, REG_R12, REG_R13, REG_R14,
     REG_PC
-} register_type_t;
+};
 
-typedef enum cpu_mode {
+char *register_to_str(enum register_type type);
+
+enum cpu_mode {
     CPU_MODE_USER       = 0b10000,
     CPU_MODE_FIQ        = 0b10001,
     CPU_MODE_IRQ        = 0b10011,
     CPU_MODE_SUPERVISOR = 0b10111,
     CPU_MODE_UNDEFINED  = 0b11011,
     CPU_MODE_SYSTEM     = 0b11111
-} cpu_mode_t;
+};
 
 typedef struct cpsr {
-    cpu_mode_t mode             : 5;
+    enum cpu_mode mode          : 5;
     uint32_t T                  : 1;
     uint32_t disable_fiq        : 1;
     uint32_t disable_irq        : 1;
@@ -52,14 +54,14 @@ typedef struct cpsr {
     uint32_t negative           : 1;
 } cpsr_t;
 
-typedef struct armv5te {
+struct armv5te {
     arm_register_t unbanked[8];
     arm_register_t banked[8][6];
     cpsr_t cpsr;
-} armv5te_t;
+};
 
-uint32_t armv5te_get_register(register_type_t reg);
+uint32_t armv5te_get_register(enum register_type reg);
 
-void armv5te_set_register(register_type_t reg, uint32_t value);
+void armv5te_set_register(enum register_type reg, uint32_t value);
 
 #endif //JULIEDS_CPU_H

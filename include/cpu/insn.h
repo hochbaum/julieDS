@@ -5,7 +5,17 @@
 
 #include "armv5te/cpu.h"
 
-typedef enum arm_cond {
+/**
+ * Reads 4 bytes in little endian order from a char array.
+ */
+#define read_dword_le(data,i) ((data[i + 3] << 24) | (data[i + 2] << 16) | (data[i + 1] << 8) | data[i])
+
+/**
+ * Rotates (n) d bits to the right.
+ */
+#define rotate_dword_right(n,d) (n >> d) | (n << (32 - d))
+
+enum arm_cond {
     EQ = 0b0000, // Equal
     NE = 0b0001, // Not equal
     CS = 0b0010, // Carry set
@@ -21,22 +31,20 @@ typedef enum arm_cond {
     GT = 0b1100, // Greater than (signed)
     LE = 0b1101, // Less or equal (signed)
     AL = 0b1110, // Always
-} arm_cond_t;
+};
 
-typedef struct arm_insn {
-    unsigned int shifter_operand    : 12;   // 11..0
-    unsigned int destination        : 4;    // 15..12
-    unsigned int source             : 4;    // 19..16
-    unsigned int update             : 1;    // 20
-    unsigned int opcode             : 4;    // 24..21
-    unsigned int immediate          : 1;    // 25
-    unsigned int                    : 2;    // 27..26, not sure what this is yet
-    arm_cond_t condition            : 4;    // 31..28
-} arm_insn_t;
+struct arm_insn {
+    uint32_t shifter_operand    : 12;   // 11..0
+    uint32_t destination        : 4;    // 15..12
+    uint32_t source             : 4;    // 19..16
+    uint32_t update             : 1;    // 20
+    uint32_t opcode             : 4;    // 24..21
+    uint32_t immediate          : 1;    // 25
+    uint32_t type               : 2;    // 27..26, not sure what this is yet
+    enum arm_cond condition     : 4;    // 31..28
+};
 
-inline arm_insn_t *insn_parse_raw(uint32_t *raw);
-
-#define COND_FUNC(x) unsigned int armv5te_cond_##op(armv5te_t *cpu, arm_insn_t *insn)
+#define COND_FUNC(x) uint32_t armv5te_cond_##op(struct armv5te *cpu, struct arm_insn *insn)
 
 COND_FUNC(eq);
 COND_FUNC(ne);
@@ -54,7 +62,7 @@ COND_FUNC(gt);
 COND_FUNC(le);
 COND_FUNC(al);
 
-#define INSN_FUNC(op) void armv5te_##op(armv5te_t *cpu, arm_insn_t *insn)
+#define INSN_FUNC(op) void armv5te_##op(struct armv5te *cpu, struct arm_insn *insn)
 
 INSN_FUNC(and);
 INSN_FUNC(eor);

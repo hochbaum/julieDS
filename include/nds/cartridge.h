@@ -56,6 +56,6 @@ struct nds_cartridge_header {
     char _reserved2[32];                // Reserved
 };
 
-char *nds_cartridge_read(const char *path);
+unsigned char *nds_cartridge_read(const char *path);
 
 #endif //JULIEDS_CARTRIDGE_H

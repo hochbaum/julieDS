@@ -44,7 +44,7 @@ struct arm_insn {
     enum arm_cond condition     : 4;    // 31..28
 };
 
-#define COND_FUNC(x) uint32_t armv5te_cond_##op(struct armv5te *cpu, struct arm_insn *insn)
+#define COND_FUNC(op) uint32_t armv5te_cond_##op(struct armv5te *cpu, struct arm_insn *insn)
 
 COND_FUNC(eq);
 COND_FUNC(ne);

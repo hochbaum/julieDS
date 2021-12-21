@@ -1,7 +1,6 @@
 #include "cpu/armv5te/cpu.h"
 
-char *register_to_str(enum register_type type)
-{
+char *register_to_str(enum register_type type) {
     static char *names[] = {
             "R0",
             "R1",

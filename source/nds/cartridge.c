@@ -4,8 +4,7 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 
-unsigned char *nds_cartridge_read(const char *path)
-{
+unsigned char *nds_cartridge_read(const char *path) {
     FILE *fp;
     if ((fp = fopen(path, "rb+")) == NULL) return NULL;
 

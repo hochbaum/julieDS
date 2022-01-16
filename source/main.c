@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 #include "cpu/armv5te/cpu.h"
 #include "cpu/insn.h"
@@ -15,14 +16,15 @@ int main(int argc, char **argv) {
     }
 
     char *filename = argv[1];
-    unsigned char *data = nds_cartridge_read(filename);
+    union nds_cartridge *cartridge = nds_cartridge_read(filename);
+    unsigned char *data = cartridge->data;
 
     if (data == NULL) {
         printf("Error: could not read cartridge %s\n", filename);
         return 1;
     }
 
-    struct nds_cartridge_header *header = (struct nds_cartridge_header *) data;
+    struct nds_cartridge_header *header = cartridge->header;
 
     printf("Successfully read cartridge \"%s\"\n", header->game_title);
 
@@ -36,12 +38,17 @@ int main(int argc, char **argv) {
         struct arm_insn *insn = (struct arm_insn *) &raw_op;
 
         // Print some MOV ops for testing.
-        if (insn->opcode == 0b1101u && insn->immediate) {
+        if (insn->opcode == 0b1101 && insn->immediate) {
             uint8_t rotation = (insn->shifter_operand >> 8) & 0xF;
             uint8_t n = insn->shifter_operand & 0xFF;
             printf("%08X: MOV %s, #0x%08X\n", raw_op, register_to_str(insn->destination), rotate_dword_right(n, rotation * 2));
         }
     }
+
+    struct nds_system nds;
+    nds_system_init(&nds);
+    mm_map_add(nds.mmap, 0, NDS_RAM_SIZE, "RAM", &nds.ram);
+    mm_map_add(nds.mmap, NDS_VRAM_OFFSET, NDS_VRAM_SIZE, "vRAM", &nds.vram);
 
     InitWindow(NDS_SCREEN_WIDTH, NDS_SCREEN_HEIGHT * 2, "julieDS");
 
@@ -53,9 +60,7 @@ int main(int argc, char **argv) {
     while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(BLACK);
-        for (int i = 0; i < NDS_SCREEN_WIDTH; i++) {
-            DrawPixel(i, NDS_SCREEN_HEIGHT - 1, RED);
-        }
+
         DrawText("TOP LCD", top_center, NDS_SCREEN_HEIGHT / 2, 10, WHITE);
         DrawText("TOUCHSCREEN", bot_center, NDS_SCREEN_HEIGHT / 2 + NDS_SCREEN_HEIGHT, 10, WHITE);
         EndDrawing();

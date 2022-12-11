@@ -2,7 +2,9 @@ SOURCES = $(shell find ./source -name *.c -type f)
 OBJECTS = ${SOURCES:.c=.o}
 
 CC = gcc
-CFLAGS = -Wall -Wextra -Werror -Iinclude/ -lraylib -g
+CFLAGS = -Wall -Wextra -Werror -Iinclude/ -g -DDEBUG=1
+LDFLAGS =
+LDLIBS = -lraylib -lpthread -ldl -lm
 
 .DEFAULT_GOAL = julieDS
 all: clean julieDS
@@ -15,7 +17,7 @@ clean:
 
 julieDS: $(SOURCES)
 	@mkdir -p build
-	@$(CC) $(CFLAGS) $(SOURCES) -o build/$@
+	@$(CC) $(CFLAGS) $(LDFLAGS) $(SOURCES) -o build/$@ $(LDLIBS)
 	@echo Done
 
 .PHONY: run

@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#define bytes(n) n*8
+#define bytes(n) (n*8)
 
 enum nds_unit_type {
     NDS         = 0x00,

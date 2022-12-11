@@ -6,8 +6,8 @@
 typedef unsigned int arm_register;
 
 enum register_type {
-    REG_R0, REG_R1, REG_R2, REG_R3, REG_R4, REG_R5, REG_R6, REG_R7,
-    REG_R8, REG_R9, REG_R10, REG_R11, REG_R12, REG_R13, REG_R14,
+    REG_R0, REG_R1, REG_R2, REG_R3, REG_R4, REG_R5, REG_R6, REG_R7, // unbanked
+    REG_R8, REG_R9, REG_R10, REG_R11, REG_R12, REG_R13, REG_R14,    // banked
     REG_PC
 };
 

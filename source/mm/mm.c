@@ -4,6 +4,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "log/log.h"
+
 void mm_map_add(struct mem_map *map, addr addr, unsigned int len, const char *name, void *ptr) {
     struct mem_map_entry *head = map->head;
     struct mem_map_entry *new = malloc(sizeof(struct mem_map_entry));
@@ -14,7 +16,7 @@ void mm_map_add(struct mem_map *map, addr addr, unsigned int len, const char *na
     strcpy(new->name, name);
     map->head = new;
 
-    printf("Mapped memory 0x%08X - 0x%08X as %s\n", addr, addr + len, new->name);
+    jlog(LL_DEBUG, "Mapped memory 0x%08X - 0x%08X as %s\n", addr, addr + len, new->name);
 }
 
 struct mem_map_entry *mm_map_get(struct mem_map *map, addr addr) {
